@@ -12,6 +12,7 @@ class Database:
                  host="localhost",
                  port=7070,
                  default_prefix="",
+                 password=None,
                  default_session_key="sessions",
                  default_params_key="weights",
                  default_worker_prefix="workers.",
@@ -34,14 +35,14 @@ class Database:
         # if localhost and can't find redis, start one
         if host in ("localhost","0.0.0.0", "127.0.0.1", "*"):
             try:
-                redis.Redis(host=host, port=port, *args,**kwargs).client_list()
+                redis.Redis(host=host, port=port, password=password, *args, **kwargs).client_list()
             except redis.ConnectionError:
                 # if not, on localhost try launch new one
                 print("Redis not found on %s:%s. Launching new redis..." % (host, port))
-                self.start_redis(port)
+                self.start_redis(port, password)
                 time.sleep(5)
 
-        self.redis = redis.Redis(host=host, port=port, *args,**kwargs)
+        self.redis = redis.Redis(host=host, port=port, password=password, *args,**kwargs)
 
         #naming parameters
         self.default_session_key = default_prefix+default_session_key
@@ -49,9 +50,13 @@ class Database:
         self.default_worker_prefix= default_prefix+default_worker_prefix
 
 
-    def start_redis(self, port=7070):
+    def start_redis(self, port=7070, password=None):
         """starts a redis serven in a NON-DAEMON mode"""
-        os.system("nohup redis-server --port %s > .redis.log &" % port)
+        if password is None:
+            os.system("nohup redis-server --port %s > .redis.log &" % port)
+        else:
+            os.system("nohup redis-server --port %s --password %s > .redis.log &" % (port, password))
+            
         
     def worker_heartbeat(self,role,pid=None,worker_prefix=None,expiration_time=30):
         """registers worker to the database. Used to quickly kill all workers."""
