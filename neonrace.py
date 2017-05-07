@@ -57,6 +57,12 @@ class UniverseA3C(AtariA3C):
         """spawn a new environment instance"""
         print(self.env_id)
         env = gym.make(self.env_id)
+        
+        env.configure(fps=5.0, remotes=1, start_timeout=15 * 60, client_id=self.client_id,
+                      vnc_driver='go', vnc_kwargs={
+                'encoding': 'tight', 'compress_level': 0,
+                'fine_quality_level': 50, 'subsample_level': 3})
+
         env = Vision(env)  # observation is an image
         env = BlockingReset(env)  # when env.reset will freeze until env is ready
         
@@ -67,11 +73,6 @@ class UniverseA3C(AtariA3C):
         # crop, grayscale and rescale to 64x64
         env = PreprocessImage(env,64,64,grayscale=True,
                               crop=lambda img: img[84:84 + 480, 18:18 + 640])
-        
-        env.configure(fps=5.0, remotes=1, start_timeout=15 * 60, client_id=self.client_id,
-                      vnc_driver='go', vnc_kwargs={
-                'encoding': 'tight', 'compress_level': 0,
-                'fine_quality_level': 50, 'subsample_level': 3})
 
         return env
     
