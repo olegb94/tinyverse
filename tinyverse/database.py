@@ -55,7 +55,7 @@ class Database:
         if password is None:
             os.system("nohup redis-server --port %s > .redis.log &" % port)
         else:
-            os.system("nohup redis-server --port %s --password %s > .redis.log &" % (port, password))
+            os.system("redis-server --port %s --requirepass %s --daemonize yes" % (port, password))
             
         
     def worker_heartbeat(self,role,pid=None,worker_prefix=None,expiration_time=30):
