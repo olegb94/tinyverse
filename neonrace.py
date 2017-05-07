@@ -1,5 +1,6 @@
 import gym
 from gym import spaces
+from gym.wrappers.time_limit import TimeLimit
 from universe.vectorized import ActionWrapper
 from universe.wrappers import BlockingReset, Unvectorize, Vision
 from universe import spaces as vnc_spaces
@@ -73,6 +74,8 @@ class UniverseA3C(AtariA3C):
         # crop, grayscale and rescale to 64x64
         env = PreprocessImage(env,64,64,grayscale=True,
                               crop=lambda img: img[84:84 + 480, 18:18 + 640])
+
+        env = TimeLimit(env, max_episode_seconds=2*60)
 
         return env
     
