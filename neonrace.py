@@ -75,14 +75,14 @@ class UniverseA3C(AtariA3C):
         env = PreprocessImage(env,64,64,grayscale=True,
                               crop=lambda img: img[84:84 + 480, 18:18 + 640])
 
-        env = TimeLimit(env, max_episode_seconds=2*60)
+        env = TimeLimit(env, max_episode_seconds=5*60)
 
         return env
     
     def make_train_fun(self,agent,
                        sequence_length=25,  # how many steps to make before updating weights
                        observation_shape=(1,64, 64),  # same as env.observation_space.shape
-                       reward_scale=1e-3, #rewards are multiplied by this. May be useful if they are large.
+                       reward_scale=1e-1, #rewards are multiplied by this. May be useful if they are large.
                        gamma=0.99, #discount from TD
         ):
         """Compiles a function to train for one step"""
